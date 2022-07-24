@@ -7,14 +7,14 @@ import plotly.graph_objs as go
 from indeterminatebeam import Beam, Support, TrapezoidalLoadV, DistributedLoadV
 
 # Local Application Imports
-from foundationdesign.datavalidation import (
+from FoundationDesign.datavalidation import (
     assert_input_limit,
     assert_number,
     assert_strictly_positive_number,
     assert_maximum_input_limit,
     assert_input_range,
 )
-from foundationdesign.concretedesignfunc import (
+from FoundationDesign.concretedesignfunc import (
     bending_reinforcement,
     minimum_steel,
     shear_stress_check_1d,
@@ -793,6 +793,9 @@ class PadFoundation:
         fig_plan.update_layout(
             title_text="FOOTING PLAN", width=500, height=500, showlegend=True
         )
+        fig_plan.update_layout(yaxis_range=[-self.foundation_length*0.2,self.foundation_length*1.2])
+        fig_plan.update_layout(xaxis_range=[-self.foundation_width*0.2,self.foundation_width*1.2])
+
         fig_plan.show()
 
     def total_force_X_dir_uls(self):
@@ -1331,6 +1334,8 @@ class padFoundationDesign(PadFoundation):
         """
         foundationx = self.__loading_diagrams_X_dir()
         fig = foundationx.plot_beam_diagram()
+        fig.layout.title.text = "Foundation schematic (length)"
+        fig.layout.xaxis.title.text = "Foundation length"
         fig.show()
 
     def plot_foundation_loading_Y(self):
@@ -1341,6 +1346,8 @@ class padFoundationDesign(PadFoundation):
         """
         foundationx = self.__loading_diagrams_Y_dir()
         fig = foundationx.plot_beam_diagram()
+        fig.layout.title.text = "Foundation schematic (width)"
+        fig.layout.xaxis.title.text = "Foundation width"
         fig.show()
 
     def plot_bending_moment_X(self):
@@ -1352,6 +1359,11 @@ class padFoundationDesign(PadFoundation):
         x = self.PadFoundation.col_pos_xdir + self.PadFoundation.column_length / 2
         foundation.add_query_points(x)
         fig1 = foundation.plot_bending_moment()
+        fig1.layout.xaxis.title.text = "Foundation length"
+        y_coords = []
+        for coord in fig1.data[0].y:
+            y_coords.append(-coord)
+        fig1.data[0].y = y_coords
         fig1.show()
 
     def plot_bending_moment_Y(self):
@@ -1361,6 +1373,11 @@ class padFoundationDesign(PadFoundation):
         y = self.PadFoundation.col_pos_ydir + self.PadFoundation.column_width / 2
         foundation.add_query_points(y)
         fig2 = foundation.plot_bending_moment()
+        fig2.layout.xaxis.title.text = "Foundation width"
+        y_coords = []
+        for coord in fig2.data[0].y:
+            y_coords.append(-coord)
+        fig2.data[0].y = y_coords
         fig2.show()
 
     def plot_shear_force_X(self):
@@ -1380,6 +1397,7 @@ class padFoundationDesign(PadFoundation):
         )
         foundation.add_query_points(x1, x2)
         fig1 = foundation.plot_shear_force()
+        fig1.layout.xaxis.title.text = "Foundation length"
         fig1.show()
 
     def plot_shear_force_Y(self):
@@ -1399,6 +1417,7 @@ class padFoundationDesign(PadFoundation):
         )
         foundation.add_query_points(y1, y2)
         fig1 = foundation.plot_shear_force()
+        fig1.layout.xaxis.title.text = "Foundation width"
         fig1.show()
 
     def get_design_moment_X(self):
